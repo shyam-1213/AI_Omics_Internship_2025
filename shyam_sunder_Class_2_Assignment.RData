@@ -1,0 +1,39 @@
+getwd
+setwd("C:/Users/dell/Documents/AI_Omics_Internship_2025")
+classify_gene <- function(logFC, padj) {
+  if (is.na(padj)) padj <- 1   # Replace missing padj with 1
+  if (logFC > 1 & padj < 0.05) {
+    return("Upregulated")
+  } else if (logFC < -1 & padj < 0.05) {
+    return("Downregulated")
+  } else {
+    return("Not_Significant")
+  }
+}
+
+
+data1 <- read.csv(choose.files(), header = TRUE)
+data2 <- read.csv(choose.files(), header = TRUE)
+
+data1$status <- mapply(classify_gene, data1$logFC, data1$padj)
+data2$status <- mapply(classify_gene, data2$logFC, data2$padj)
+
+
+
+if (!dir.exists("Results")) {
+  dir.create("Results")
+}
+
+write.csv(data1, "Results/Processed_DEGs_Data_1.csv", row.names = FALSE)
+write.csv(data2, "Results/Processed_DEGs_Data_2.csv", row.names = FALSE)
+
+
+
+cat("\nSummary for DEGs_Data_1.csv:\n")
+print(table(data1$status))
+
+cat("\nSummary for DEGs_Data_2.csv:\n")
+print(table(data2$status))
+
+cat("\nAll processing completed. Processed files saved in 'Results' folder.\n")
+
